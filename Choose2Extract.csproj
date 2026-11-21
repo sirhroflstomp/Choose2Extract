@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>sirhroflstomp-Choose2Extract</AssemblyName>
+    <RootNamespace>Choose2Extract</RootNamespace>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Keep local folder names out of the released DLL -->
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+  </PropertyGroup>
+
+  <!-- Path to your SPT folder. Pass -p:GameDir="..." or put it in GameDir.user.props (see README) -->
+  <Import Project="GameDir.user.props" Condition="Exists('GameDir.user.props')" />
+
+  <Target Name="CheckGameDir" BeforeTargets="ResolveAssemblyReferences" Condition="'$(GameDir)' == ''">
+    <Error Text="GameDir is not set. Pass -p:GameDir=&quot;C:\path\to\SPT&quot; or create GameDir.user.props, see the README." />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(GameDir)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>$(GameDir)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="spt-reflection">
+      <HintPath>$(GameDir)\BepInEx\plugins\spt\spt-reflection.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GameDir)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Comfort">
+      <HintPath>$(GameDir)\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sirenix.Serialization">
+      <HintPath>$(GameDir)\EscapeFromTarkov_Data\Managed\Sirenix.Serialization.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(GameDir)\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GameDir)\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(GameDir)\EscapeFromTarkov_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy the plugin straight into the game after every build -->
+  <Target Name="CopyToGame" AfterTargets="Build" Condition="Exists('$(GameDir)\BepInEx\plugins')">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GameDir)\BepInEx\plugins" />
+  </Target>
+
+</Project>
